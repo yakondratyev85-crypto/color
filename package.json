@@ -1,0 +1,18 @@
+{
+  "name": "paint-by-numbers-offline",
+  "version": "1.0.0",
+  "description": "Offline browser app that converts images into paint-by-numbers templates using mathematical image processing algorithms.",
+  "private": true,
+  "scripts": {
+    "start": "python3 -m http.server 4173",
+    "serve": "python3 -m http.server 4173"
+  },
+  "keywords": [
+    "canvas",
+    "image-processing",
+    "paint-by-numbers",
+    "k-means",
+    "offline"
+  ],
+  "license": "MIT"
+}
