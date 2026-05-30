@@ -91,9 +91,6 @@ label {
 
 output { color: var(--ink); font-variant-numeric: tabular-nums; }
 input[type="range"] { width: 100%; accent-color: var(--accent); }
-select { width: 100%; border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; color: var(--ink); background: white; font: inherit; font-weight: 700; }
-.check-row { display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 14px; background: white; }
-.check-row input { inline-size: 18px; block-size: 18px; accent-color: var(--accent); }
 
 .actions {
   display: flex;
@@ -142,7 +139,7 @@ canvas {
   border: 1px solid #eee8dc;
 }
 
-.palette-panel, .debug-panel { padding: 18px; }
+.palette-panel { padding: 18px; }
 .palette {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
@@ -167,7 +164,6 @@ canvas {
 }
 .swatch strong { display: block; }
 .swatch code { color: var(--muted); }
-.debug-panel pre { margin: 0; white-space: pre-wrap; font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: #2d2a24; background: #fff8e8; border: 1px solid var(--line); border-radius: 14px; padding: 14px; max-height: 360px; overflow: auto; }
 
 @media (max-width: 850px) {
   .grid-controls, .previews { grid-template-columns: 1fr; }
