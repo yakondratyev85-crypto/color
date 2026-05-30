@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Раскраска по номерам — оффлайн</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="hero">
+    <div>
+      <p class="eyebrow">Offline · Canvas API · без нейросетей</p>
+      <h1>Раскраска по номерам из изображения</h1>
+      <p class="lead">Загрузите фото, настройте палитру и получите чистый шаблон с плавными контурами, номерами и экспортом PNG/SVG.</p>
+    </div>
+  </header>
+
+  <main class="app">
+    <section class="panel controls" aria-label="Настройки">
+      <label class="file-drop" for="imageInput">
+        <span>Загрузить изображение</span>
+        <small>PNG, JPEG, WebP — всё обрабатывается локально в браузере</small>
+      </label>
+      <input id="imageInput" type="file" accept="image/*">
+
+      <div class="grid-controls">
+        <label>Количество цветов <output id="colorsOut">18</output>
+          <input id="colorCount" type="range" min="8" max="30" value="18">
+        </label>
+        <label>Минимальная область, px <output id="minAreaOut">180</output>
+          <input id="minArea" type="range" min="30" max="1200" value="180" step="10">
+        </label>
+        <label>Сглаживание шума <output id="blurOut">2</output>
+          <input id="blurRadius" type="range" min="0" max="5" value="2" step="1">
+        </label>
+        <label>Плавность контуров <output id="smoothOut">2</output>
+          <input id="smoothness" type="range" min="0" max="4" value="2" step="1">
+        </label>
+        <label>Толщина контура <output id="strokeOut">1.4</output>
+          <input id="strokeWidth" type="range" min="0.6" max="4" value="1.4" step="0.2">
+        </label>
+        <label>Размер цифр <output id="fontOut">14</output>
+          <input id="fontSize" type="range" min="8" max="28" value="14" step="1">
+        </label>
+      </div>
+
+      <div class="actions">
+        <button id="generateBtn" type="button" disabled>Создать раскраску</button>
+        <button id="downloadPng" type="button" disabled>Скачать PNG</button>
+        <button id="downloadSvg" type="button" disabled>Скачать SVG</button>
+      </div>
+      <div id="status" class="status" role="status">Выберите изображение, чтобы начать.</div>
+    </section>
+
+    <section class="previews">
+      <article class="panel preview-card">
+        <h2>Исходник</h2>
+        <canvas id="sourceCanvas"></canvas>
+      </article>
+      <article class="panel preview-card">
+        <h2>Цветовая карта</h2>
+        <canvas id="mapCanvas"></canvas>
+      </article>
+      <article class="panel preview-card wide">
+        <h2>Финальная раскраска</h2>
+        <canvas id="finalCanvas"></canvas>
+      </article>
+    </section>
+
+    <section class="panel palette-panel">
+      <h2>Палитра</h2>
+      <div id="palette" class="palette empty">Палитра появится после генерации.</div>
+    </section>
+  </main>
+
+  <script src="main.js"></script>
+</body>
+</html>
