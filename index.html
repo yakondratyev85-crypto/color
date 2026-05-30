@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Раскраска по номерам — оффлайн</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="hero">
+    <div>
+      <p class="eyebrow">Offline · Canvas API · edge-preserving pipeline</p>
+      <h1>Раскраска по номерам из изображения</h1>
+      <p class="lead">Загрузите фото, настройте степень детализации и получите чистый печатный шаблон с крупными зонами, плавными контурами и номерами.</p>
+    </div>
+  </header>
+
+  <main class="app">
+    <section class="panel controls" aria-label="Настройки">
+      <label class="file-drop" for="imageInput">
+        <span>Загрузить изображение</span>
+        <small>PNG, JPEG, WebP — всё обрабатывается локально в браузере</small>
+      </label>
+      <input id="imageInput" type="file" accept="image/*">
+
+      <div class="grid-controls">
+        <label>Количество цветов <output id="colorsOut">18</output>
+          <input id="colorCount" type="range" min="8" max="30" value="18">
+        </label>
+        <label>Цветовое пространство
+          <select id="colorSpace">
+            <option value="lab" selected>Lab (лучше для восприятия)</option>
+            <option value="rgb">RGB (быстрее)</option>
+          </select>
+        </label>
+        <label>Detail level
+          <select id="detailLevel">
+            <option value="low">Low — максимально чисто</option>
+            <option value="medium" selected>Medium — баланс</option>
+            <option value="high">High — больше деталей</option>
+          </select>
+        </label>
+        <label>Минимальная область, % <output id="minAreaPctOut">0.25</output>
+          <input id="minAreaPct" type="range" min="0.15" max="0.50" value="0.25" step="0.01">
+        </label>
+        <label>Merge similar regions <output id="mergeOut">65</output>
+          <input id="mergeStrength" type="range" min="0" max="100" value="65" step="5">
+        </label>
+        <label>Contour smoothing <output id="contourOut">3</output>
+          <input id="contourSmoothing" type="range" min="0" max="5" value="3" step="1">
+        </label>
+        <label>Толщина контура <output id="strokeOut">1.4</output>
+          <input id="strokeWidth" type="range" min="0.6" max="4" value="1.4" step="0.2">
+        </label>
+        <label>Размер цифр <output id="fontOut">14</output>
+          <input id="fontSize" type="range" min="8" max="28" value="14" step="1">
+        </label>
+        <label class="check-row">
+          <input id="preserveEdges" type="checkbox" checked>
+          Preserve important edges
+        </label>
+        <label class="check-row">
+          <input id="removeTexture" type="checkbox" checked>
+          Remove texture noise
+        </label>
+      </div>
+
+      <div class="actions">
+        <button id="generateBtn" type="button" disabled>Создать раскраску</button>
+        <button id="downloadPng" type="button" disabled>Скачать PNG</button>
+        <button id="downloadSvg" type="button" disabled>Скачать SVG</button>
+      </div>
+      <div id="status" class="status" role="status">Выберите изображение, чтобы начать.</div>
+    </section>
+
+    <section class="previews">
+      <article class="panel preview-card">
+        <h2>Исходник</h2>
+        <canvas id="sourceCanvas"></canvas>
+      </article>
+      <article class="panel preview-card">
+        <h2>Цветовая карта</h2>
+        <canvas id="mapCanvas"></canvas>
+      </article>
+      <article class="panel preview-card wide">
+        <h2>Финальная раскраска</h2>
+        <canvas id="finalCanvas"></canvas>
+      </article>
+    </section>
+
+    <section class="panel palette-panel">
+      <h2>Палитра</h2>
+      <div id="palette" class="palette empty">Палитра появится после генерации.</div>
+    </section>
+  </main>
+
+  <script src="main.js"></script>
+</body>
+</html>
