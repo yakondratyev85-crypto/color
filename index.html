@@ -9,9 +9,9 @@
 <body>
   <header class="hero">
     <div>
-      <p class="eyebrow">Offline · Canvas API · edge-preserving pipeline</p>
+      <p class="eyebrow">Offline · Canvas API · без нейросетей</p>
       <h1>Раскраска по номерам из изображения</h1>
-      <p class="lead">Загрузите фото, настройте степень детализации и получите чистый печатный шаблон с крупными зонами, плавными контурами и номерами.</p>
+      <p class="lead">Загрузите фото, настройте палитру и получите чистый шаблон с плавными контурами, номерами и экспортом PNG/SVG.</p>
     </div>
   </header>
 
@@ -27,60 +27,20 @@
         <label>Количество цветов <output id="colorsOut">18</output>
           <input id="colorCount" type="range" min="8" max="30" value="18">
         </label>
-        <label>Режим обработки
-          <select id="processingMode">
-            <option value="auto" selected>Auto</option>
-            <option value="photo">Photo</option>
-            <option value="flat">Flat Illustration</option>
-          </select>
+        <label>Минимальная область, px <output id="minAreaOut">180</output>
+          <input id="minArea" type="range" min="30" max="1200" value="180" step="10">
         </label>
-        <label>Цветовое пространство
-          <select id="colorSpace">
-            <option value="lab" selected>Lab (лучше для восприятия)</option>
-            <option value="rgb">RGB (быстрее)</option>
-          </select>
+        <label>Сглаживание шума <output id="blurOut">2</output>
+          <input id="blurRadius" type="range" min="0" max="5" value="2" step="1">
         </label>
-        <label>Уровень детализации
-          <select id="detailLevel">
-            <option value="clean">Clean Poster</option>
-            <option value="coloring" selected>Coloring Book</option>
-            <option value="detailed">Detailed Art</option>
-          </select>
-        </label>
-        <label>Минимальная область, % <output id="minAreaPctOut">0.25</output>
-          <input id="minAreaPct" type="range" min="0.15" max="0.50" value="0.25" step="0.01">
-        </label>
-        <label>Merge similar regions <output id="mergeOut">65</output>
-          <input id="mergeStrength" type="range" min="0" max="100" value="65" step="5">
-        </label>
-        <label>Contour smoothing <output id="contourOut">3</output>
-          <input id="contourSmoothing" type="range" min="0" max="5" value="3" step="1">
+        <label>Плавность контуров <output id="smoothOut">2</output>
+          <input id="smoothness" type="range" min="0" max="4" value="2" step="1">
         </label>
         <label>Толщина контура <output id="strokeOut">1.4</output>
           <input id="strokeWidth" type="range" min="0.6" max="4" value="1.4" step="0.2">
         </label>
         <label>Размер цифр <output id="fontOut">14</output>
           <input id="fontSize" type="range" min="8" max="28" value="14" step="1">
-        </label>
-        <label class="check-row">
-          <input id="preserveEdges" type="checkbox" checked>
-          Preserve important edges
-        </label>
-        <label class="check-row">
-          <input id="preserveCorners" type="checkbox" checked>
-          Preserve corners / straight lines
-        </label>
-        <label class="check-row">
-          <input id="removeTexture" type="checkbox" checked>
-          Remove texture noise
-        </label>
-        <label class="check-row">
-          <input id="removeSlivers" type="checkbox" checked>
-          Remove thin sliver regions
-        </label>
-        <label class="check-row">
-          <input id="debugMode" type="checkbox">
-          Debug mode
         </label>
       </div>
 
@@ -110,11 +70,6 @@
     <section class="panel palette-panel">
       <h2>Палитра</h2>
       <div id="palette" class="palette empty">Палитра появится после генерации.</div>
-    </section>
-
-    <section id="debugPanel" class="panel debug-panel" hidden>
-      <h2>Debug / quality metrics</h2>
-      <pre id="debugOutput">Debug mode выключен.</pre>
     </section>
   </main>
 

@@ -23,7 +23,7 @@ def preprocess_structure(rgb: np.ndarray, mode: str, detail_level: str, smoothin
         color_radius = 18 + strength * 3
         return cv2.pyrMeanShiftFiltering(smooth, sp=spatial_radius, sr=color_radius, maxLevel=1)
 
-    # Photo Structure Preserve: use bilateral + moderate mean-shift to remove texture while
+    # Photo Simplify: use bilateral + moderate mean-shift to remove texture while
     # keeping high-contrast structure. This is intentionally not a plain blur.
     d = 5 + strength * 2
     smooth = cv2.bilateralFilter(rgb, d=d, sigmaColor=28 + strength * 7, sigmaSpace=7 + strength * 2)

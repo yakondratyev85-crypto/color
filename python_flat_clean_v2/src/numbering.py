@@ -20,15 +20,14 @@ def visual_center(region: Region, min_radius: float = 8.0) -> tuple[int, int, fl
     return (x + int(max_loc[0]), y + int(max_loc[1]), float(max_val))
 
 
-def place_numbers(regions: list[Region], min_area: int, show_numbers: bool = True, number_size: int = 14) -> list[dict]:
+def place_numbers(regions: list[Region], min_area: int, show_numbers: bool = True) -> list[dict]:
     if not show_numbers:
         return []
     numbers: list[dict] = []
-    required_radius = max(7.0, number_size * 0.48)
     for region in regions:
-        if region.area < max(min_area * 1.20, 90) or not region.can_place_number:
+        if region.area < max(min_area * 1.25, 80):
             continue
-        center = visual_center(region, min_radius=required_radius)
+        center = visual_center(region, min_radius=7.0)
         if center is None:
             continue
         x, y, radius = center
