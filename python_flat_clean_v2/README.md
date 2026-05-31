@@ -1,12 +1,14 @@
 # FlatCleanV2 Python prototype
 
-Локальный Python/OpenCV-прототип для **structure-preserving simplification**: сохранить структуру исходника, красиво упростить цвета, очистить области, построить чистые контуры и экспортировать раскраску по номерам в PNG/SVG.
+Локальный Python-прототип для проверки более чистого алгоритма генерации «раскраски по номерам» из уже упрощённых flat illustration / poster-like изображений.
 
 Старое JS-приложение в корне репозитория считается Legacy и этим прототипом не изменяется.
 
-## Установка Python
+## 1. Как установить Python
 
 Нужен Python 3.10+.
+
+Проверка версии:
 
 ```bash
 python --version
@@ -14,72 +16,66 @@ python --version
 python3 --version
 ```
 
-## Виртуальное окружение
+Если Python не установлен, скачайте его с https://www.python.org/downloads/ или установите через пакетный менеджер вашей ОС.
+
+## 2. Как создать виртуальное окружение
+
+Из папки `python_flat_clean_v2`:
 
 ```bash
-cd python_flat_clean_v2
 python -m venv .venv
-source .venv/bin/activate      # macOS / Linux
-# .venv\Scripts\Activate.ps1   # Windows PowerShell
 ```
 
-## Установка зависимостей
+Активация:
+
+```bash
+# macOS / Linux
+source .venv/bin/activate
+
+# Windows PowerShell
+.venv\Scripts\Activate.ps1
+```
+
+## 3. Как установить зависимости
 
 ```bash
 pip install -r requirements.txt
 ```
 
-Зависимости: Flask, NumPy, opencv-python-headless, svgwrite. Headless-сборка OpenCV выбрана для локальных/серверных окружений без `libGL.so.1`.
+Используются:
 
-## Запуск
+- Flask — локальный веб-интерфейс;
+- OpenCV — морфология, connected components, contours, PNG export;
+- NumPy — массивы и вычисления;
+- svgwrite — SVG export.
+
+## 4. Как запустить приложение
 
 ```bash
 python app.py
 ```
 
-Открыть в браузере:
+## 5. Как открыть приложение в браузере
+
+Откройте:
 
 ```text
 http://127.0.0.1:5000
 ```
 
-## Как пользоваться
+## 6. Как загрузить картинку
 
-1. Загрузите изображение.
-2. Выберите режим:
-   - **Auto** — анализирует картинку и выбирает режим;
-   - **Flat Preserve** — для постеров/AI-art/vector-like картинок, старается не портить исходные формы;
-   - **Photo Structure Preserve** — для фото, использует edge-preserving smoothing и упрощает текстуру;
-   - **Commercial Coloring Clean** — коммерческий режим: меньше деталей, крупнее области, чище лист для печати.
-3. Настройте colors, detail level, color tolerance, min region area, merge strength, morph cleanup, smoothing, contour simplify, preserve corners/straight lines, numbering и debug.
+1. Нажмите кнопку выбора файла.
+2. Выберите уже упрощённую flat illustration / poster-like картинку.
+3. Настройте параметры:
+   - количество цветов, по умолчанию 18;
+   - минимальный размер области;
+   - силу морфологической очистки;
+   - силу упрощения контура;
+   - показывать номера или нет.
 4. Нажмите «Создать раскраску».
-5. Скачайте PNG/SVG или изучите debug outputs.
 
-## Pipeline
-
-1. **Load image** — загрузка через Flask.
-2. **Image analysis** — unique color count, flatness score, texture score, edge density, contrast map, large region ratio, detail density.
-3. **Mode selection** — Auto выбирает Flat Preserve / Photo Structure Preserve / Commercial Coloring Clean.
-4. **Structure-preserving preprocessing**:
-   - Flat Preserve: минимальный median cleanup без сильного blur;
-   - Photo Structure Preserve: `cv2.bilateralFilter` + умеренный `cv2.pyrMeanShiftFiltering`;
-   - Commercial Coloring Clean: более сильная bilateral/mean-shift simplification.
-5. **Color grouping / quantization**:
-   - Flat Preserve: tolerance grouping в RGB с мягким Lab merge только при избытке цветов;
-   - Photo/Clean: K-Means в Lab.
-6. **Label map** — каждый пиксель получает color id.
-7. **Connected components** — 8-связность, region id, color id, area, bbox, mask, perimeter, compactness, thinness, bbox fill, local width, can_place_number.
-8. **Region Adjacency Graph** — для каждой пары соседей сохраняются длина общей границы, color distance, площадь соседа, `merge_allowed` и `merge_score`.
-9. **Region cleanup / merge** — micro/sliver/noisy regions объединяются с лучшим соседом по формуле color similarity + shared boundary + neighbor area + shape compatibility - important-edge penalty.
-10. **Important edge preservation** — Canny/gradient map защищает сильные структурные границы, особенно в Flat Preserve.
-11. **Contours** — `cv2.findContours`, upscale 2x/3x перед контуризацией, adaptive `approxPolyDP`.
-12. **Hybrid contour fitting** — straight segments выпрямляются и snap-ятся, corners сохраняются, organic curves сглаживаются отдельно.
-13. **Beautification layer** — контуры с высоким jitter/staircase или избытком точек проходят второй resampling/straightening/smoothing pass, слишком маленькие петли удаляются.
-14. **Number placement** — visual center через `cv2.distanceTransform`, номера только в подходящих областях.
-15. **PNG/SVG export** — PNG с белым фоном, черными контурами и номерами; SVG с path/text.
-16. **Debug outputs** — промежуточные карты и quality metrics для диагностики качества.
-
-## Debug outputs
+## 7. Где искать результат
 
 Все результаты сохраняются в:
 
@@ -89,40 +85,43 @@ python_flat_clean_v2/static/outputs/
 
 Файлы:
 
-- `01_original.png`
-- `02_analysis_debug.png`
-- `03_preprocessed.png`
-- `04_color_grouped.png`
-- `05_regions_debug.png`
-- `06_region_graph_debug.png`
-- `07_bad_regions_debug.png`
-- `08_contours_before.png`
-- `09_contours_after.png`
-- `10_numbers_debug.png`
-- `11_final_coloring.png`
-- `12_final_coloring.svg`
+- `source.png` — загруженное и масштабированное изображение;
+- `color_map.png` — карта сгруппированных цветов;
+- `regions_debug.png` — debug-карта связных областей случайными цветами;
+- `contours_debug.png` — цветовая карта с наложенными контурами;
+- `final_coloring.png` — финальная PNG-раскраска;
+- `final_coloring.svg` — финальный SVG с группами `contours` и `numbers`.
 
-Для обратной совместимости также создаются старые имена `source.png`, `color_map.png`, `regions_debug.png`, `contours_debug.png`, `final_coloring.png`, `final_coloring.svg`.
+## Pipeline FlatCleanV2
 
-## Проверка
+1. Загрузка изображения через Flask upload.
+2. Декодирование OpenCV и перевод BGR → RGB.
+3. Ограничение длинной стороны до 1200 px с сохранением пропорций.
+4. Аккуратная группировка цветов в Lab через OpenCV K-Means без агрессивного blur.
+5. Создание label map.
+6. Морфологическая очистка масок (`MORPH_CLOSE`, затем `MORPH_OPEN`).
+7. Connected components по 8-связности.
+8. Удаление мелких областей и присоединение к лучшему соседу по общей границе, близости цвета и размеру соседа.
+9. Повторная лёгкая морфологическая очистка после merge.
+10. Построение контуров через `cv2.findContours` и `cv2.approxPolyDP`.
+11. Выпрямление очевидных горизонтальных/вертикальных сегментов.
+12. Сглаживание контуров Chaikin-подобным методом с сохранением углов.
+13. Visual center через `cv2.distanceTransform` для размещения номеров внутри крупных областей.
+14. Export PNG и SVG.
+
+## 8. Ограничения первой версии
+
+- Прототип рассчитан именно на flat illustration / poster-like изображения, а не на сырые фотографии.
+- SVG пока рисует контуры областей как отдельные paths; полный single boundary graph можно добавить позже.
+- Номера пропускаются в маленьких или узких областях.
+- Для очень больших изображений обработка может занять несколько секунд.
+- Морфологическая очистка может чрезмерно упростить очень тонкие декоративные элементы — уменьшите параметр очистки, если это важно.
+
+## Ручная проверка
 
 ```bash
 pip install -r requirements.txt
 python app.py
 ```
 
-Затем открыть `http://127.0.0.1:5000` и протестировать минимум:
-
-1. Flat illustration: горы, лодка, небо, вода — режим Flat Preserve.
-2. Фото животного/человека/предмета — режим Photo Structure Preserve.
-3. Детальная картинка с фоном — режим Commercial Coloring Clean или Auto.
-
-Проверьте, что создаются `04_color_grouped.png`, `05_regions_debug.png`, `11_final_coloring.png`, `12_final_coloring.svg`.
-
-## Ограничения первой версии
-
-- Это прототип, не Photoshop-level редактор.
-- Семантического распознавания лиц/глаз нет: важность деталей определяется edge/contrast heuristics.
-- SVG рисует очищенные OpenCV-контуры отдельными paths; RAG уже используется для merge, но полноценный single-boundary graph без дублей можно добавить позже.
-- Для очень сложных фото лучше использовать Commercial Coloring Clean и повышенный min region area / merge strength.
-- Слишком сильная morphology может убрать тонкий декор; уменьшайте morph cleanup для деликатных flat illustrations.
+Затем открыть `http://127.0.0.1:5000`, загрузить картинку и проверить файлы в `static/outputs/`.

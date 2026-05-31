@@ -8,18 +8,13 @@ import numpy as np
 
 @dataclass
 class ImageAnalysis:
-    unique_color_count: int
+    rounded_unique_colors: int
     flatness_score: float
     texture_score: float
     edge_density: float
     large_region_ratio: float
-    detail_density: float
     contrast_mean: float
     suggested_mode: str
-
-    @property
-    def rounded_unique_colors(self) -> int:
-        return self.unique_color_count
 
 
 def build_contrast_and_edges(rgb: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
@@ -51,7 +46,6 @@ def analyze_image(rgb: np.ndarray) -> ImageAnalysis:
     contrast, canny, _important = build_contrast_and_edges(rgb)
     edge_density = float(np.count_nonzero(canny) / total)
     contrast_mean = float(np.mean(contrast))
-    detail_density = float(np.count_nonzero(contrast > 0.38) / total)
 
     # Texture is high-frequency residual after a structure-preserving median base.
     gray = cv2.cvtColor(rgb, cv2.COLOR_RGB2GRAY)
@@ -73,11 +67,11 @@ def analyze_image(rgb: np.ndarray) -> ImageAnalysis:
     flatness_score = float(np.clip(large_region_ratio * 0.55 + edge_density * 1.2 - texture_score * 0.55 - color_complexity * 0.35, 0, 1))
     if flatness_score > 0.46 and texture_score < 0.33:
         suggested = "flat"
-    elif texture_score > 0.48 or rounded_unique > 180 or detail_density > 0.16:
+    elif texture_score > 0.48 or rounded_unique > 180:
         suggested = "photo"
     else:
         suggested = "clean"
-    return ImageAnalysis(rounded_unique, flatness_score, texture_score, edge_density, large_region_ratio, detail_density, contrast_mean, suggested)
+    return ImageAnalysis(rounded_unique, flatness_score, texture_score, edge_density, large_region_ratio, contrast_mean, suggested)
 
 
 def edge_debug_rgb(contrast: np.ndarray, important_edges: np.ndarray) -> np.ndarray:
@@ -85,10 +79,3 @@ def edge_debug_rgb(contrast: np.ndarray, important_edges: np.ndarray) -> np.ndar
     rgb = cv2.cvtColor(gray, cv2.COLOR_GRAY2RGB)
     rgb[important_edges > 0] = np.array([255, 40, 30], dtype=np.uint8)
     return rgb
-
-
-def analysis_debug_rgb(rgb_image: np.ndarray, contrast: np.ndarray, important_edges: np.ndarray) -> np.ndarray:
-    # Keep the original composition faintly visible and overlay structural edges in red.
-    base = (rgb_image.astype(np.float32) * 0.55 + np.clip(contrast[..., None] * 255, 0, 255) * 0.45).clip(0, 255).astype(np.uint8)
-    base[important_edges > 0] = np.array([255, 35, 25], dtype=np.uint8)
-    return base
