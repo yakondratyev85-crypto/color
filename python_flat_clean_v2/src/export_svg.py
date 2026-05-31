@@ -17,7 +17,7 @@ def _path_data(points) -> str:
     return " ".join(parts)
 
 
-def export_svg(path: str | Path, width: int, height: int, contours: list[dict], numbers: list[dict], palette, number_size: int = 14) -> None:
+def export_svg(path: str | Path, width: int, height: int, contours: list[dict], numbers: list[dict], palette) -> None:
     dwg = svgwrite.Drawing(str(path), size=(width, height), viewBox=f"0 0 {width} {height}")
     dwg.add(dwg.rect(insert=(0, 0), size=(width, height), fill="white"))
 
@@ -28,7 +28,7 @@ def export_svg(path: str | Path, width: int, height: int, contours: list[dict], 
             contour_group.add(dwg.path(d=d))
     dwg.add(contour_group)
 
-    number_group = dwg.g(id="numbers", fill="black", font_family="Arial, sans-serif", font_weight="700", font_size=number_size, text_anchor="middle")
+    number_group = dwg.g(id="numbers", fill="black", font_family="Arial, sans-serif", font_weight="700", font_size=14, text_anchor="middle")
     for item in numbers:
         number_group.add(dwg.text(str(item["number"]), insert=(item["x"], item["y"]), dominant_baseline="central"))
     dwg.add(number_group)
